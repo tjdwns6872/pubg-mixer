@@ -1,0 +1,58 @@
+version: "3.9"
+
+services:
+
+  db:
+    build: ./db
+    container_name: mixer-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: mixer
+      MYSQL_USER: mixer
+      MYSQL_PASSWORD: mixer
+    ports:
+      - "33307:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - mixer-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "mixer", "-pmixer"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  backend:
+    build: ./backend
+    container_name: mixer-backend
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/mixer?serverTimezone=Asia/Seoul&characterEncoding=utf8&allowPublicKeyRetrieval=true&useSSL=false
+      SPRING_DATASOURCE_USERNAME: mixer
+      SPRING_DATASOURCE_PASSWORD: mixer
+      SPRING_JPA_HIBERNATE_DDL_AUTO: none
+    ports:
+      - "8080:8080"
+    networks:
+      - mixer-network
+
+  frontend:
+    build: ./frontend
+    container_name: mixer-frontend
+    depends_on:
+      backend:
+        condition: service_started
+    ports:
+      - "3000:80"
+    networks:
+      - mixer-network
+
+volumes:
+  db-data:
+
+networks:
+  mixer-network:
+    driver: bridge

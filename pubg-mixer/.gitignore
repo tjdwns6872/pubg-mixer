@@ -1,0 +1,46 @@
+# Backend (Java/Gradle)
+backend/build/
+backend/.gradle/
+backend/*.jar
+backend/*.class
+backend/.classpath
+backend/.project
+backend/.settings/
+backend/bin/
+backend/*.log
+backend/target/
+
+# Frontend (Node/React)
+frontend/node_modules/
+frontend/dist/
+frontend/.env.local
+frontend/.env.*.local
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+docker-compose.override.yml
+
+# Database (docker volumes)
+db-data/
+
+# Node package lock (if using different versions)
+frontend/package-lock.json
+
+# Gradle wrapper (optional if you want to include it)
+# gradle/wrapper/
