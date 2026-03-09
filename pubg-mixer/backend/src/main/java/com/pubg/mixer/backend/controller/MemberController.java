@@ -1,5 +1,6 @@
 package com.pubg.mixer.backend.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -8,10 +9,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import com.pubg.mixer.backend.common.CommonResponse;
+import com.pubg.mixer.backend.dto.MemberCreateRequest;
 import com.pubg.mixer.backend.dto.MemberDto;
 import com.pubg.mixer.backend.service.MemberService;
-import com.fasterxml.jackson.annotation.JsonFormat;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -26,10 +29,9 @@ public class MemberController {
      * JSON 배열이나 단일 객체 모두 허용된다.
      */
     @PostMapping("/members")
-    public ResponseEntity<List<MemberDto>> createMembers(
-            @RequestBody @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
-            List<MemberDto> members) {
-        List<MemberDto> saved = memberService.saveMembers(members);
-        return ResponseEntity.status(201).body(saved);
+    public ResponseEntity<CommonResponse<List<MemberDto>>> createMembers(@RequestBody @Valid MemberCreateRequest members) {
+        List<MemberDto> saved = memberService.saveMembers(members.getMembers());
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(CommonResponse.success(saved));
     }
 }

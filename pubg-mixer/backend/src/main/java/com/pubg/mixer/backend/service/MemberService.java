@@ -1,14 +1,13 @@
 package com.pubg.mixer.backend.service;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pubg.mixer.backend.dto.MemberDto;
 import com.pubg.mixer.backend.entity.Member;
+import com.pubg.mixer.backend.mapper.MemberMapper;
 import com.pubg.mixer.backend.repository.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -17,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final MemberMapper memberMapper;
 
     /**
      * 여러 멤버를 저장한다. 개수가 1개든 여러개든 리스트로 받아 처리.
@@ -26,31 +26,10 @@ public class MemberService {
      */
     @Transactional
     public List<MemberDto> saveMembers(List<MemberDto> dtos) {
-        List<Member> entities = dtos.stream()
-                .map(this::toEntity)
-                .collect(Collectors.toList());
+        List<Member> entities = memberMapper.toEntityList(dtos);
 
         List<Member> saved = memberRepository.saveAll(entities);
 
-        return saved.stream()
-                .map(this::toDto)
-                .collect(Collectors.toList());
-    }
-
-    private Member toEntity(MemberDto dto) {
-        return Member.builder()
-                .id(dto.getId())
-                .nickname(dto.getNickname())
-                .tier(dto.getTier() == null ? 0 : dto.getTier())
-                .createdAt(LocalDateTime.now())
-                .build();
-    }
-
-    private MemberDto toDto(Member entity) {
-        return MemberDto.builder()
-                .id(entity.getId())
-                .nickname(entity.getNickname())
-                .tier(entity.getTier())
-                .build();
+        return memberMapper.toDtoList(saved);
     }
 }
