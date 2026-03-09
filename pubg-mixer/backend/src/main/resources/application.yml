@@ -9,6 +9,7 @@ spring:
       maximum-pool-size: 5
       
   jpa:
+    show-sql: true
     hibernate:
       ddl-auto: none
     open-in-view: false
