@@ -1,19 +1,22 @@
 package com.pubg.mixer.backend.service;
 
+import java.util.Collections;
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pubg.mixer.backend.dto.MemberDto;
 import com.pubg.mixer.backend.entity.Member;
 import com.pubg.mixer.backend.mapper.MemberMapper;
-import com.pubg.mixer.backend.repository.MemberRepository;
+import com.pubg.mixer.backend.repository.mamber.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MemberService {
     private final MemberRepository memberRepository;
     private final MemberMapper memberMapper;
@@ -26,10 +29,20 @@ public class MemberService {
      */
     @Transactional
     public List<MemberDto> saveMembers(List<MemberDto> dtos) {
-        List<Member> entities = memberMapper.toEntityList(dtos);
+        if (dtos == null || dtos.isEmpty()) {
+            return Collections.emptyList();
+        }
 
-        List<Member> saved = memberRepository.saveAll(entities);
+        try {
+            List<Member> entities = memberMapper.toEntityList(dtos);
+            List<Member> saved = memberRepository.saveAll(entities);
 
-        return memberMapper.toDtoList(saved);
+            log.info("\n saved ==> {}", saved);
+            return memberMapper.toDtoList(saved);
+        } catch (Exception e) {
+            // 예외처리 추가 예정
+            e.printStackTrace();
+            return null;
+        }
     }
 }

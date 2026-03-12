@@ -1,4 +1,4 @@
-package com.pubg.mixer.backend.repository;
+package com.pubg.mixer.backend.repository.mamber;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 import com.pubg.mixer.backend.entity.Member;
 
 @Repository
-public interface MemberRepository extends JpaRepository<Member, Long> {
+public interface MemberRepository extends JpaRepository<Member, Long>, MemberRepositoryCustom {
 }
