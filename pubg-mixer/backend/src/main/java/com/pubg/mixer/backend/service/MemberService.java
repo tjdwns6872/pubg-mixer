@@ -1,9 +1,14 @@
 package com.pubg.mixer.backend.service;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import com.pubg.mixer.backend.exception.member.ValidateDuplicateNickname;
+import com.pubg.mixer.backend.exception.member.ValidateRequestDuplicateNickname;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,16 +38,22 @@ public class MemberService {
             return Collections.emptyList();
         }
 
+        Set<String> nicknameSet = new HashSet<>(dtos.size());
+
+        for(MemberDto dto: dtos){
+            if(!nicknameSet.add(dto.getNickname())){
+                throw new ValidateRequestDuplicateNickname();
+            }
+        }
+
         try {
             List<Member> entities = memberMapper.toEntityList(dtos);
             List<Member> saved = memberRepository.saveAll(entities);
 
-            log.info("\n saved ==> {}", saved);
             return memberMapper.toDtoList(saved);
-        } catch (Exception e) {
-            // 예외처리 추가 예정
-            e.printStackTrace();
-            return null;
+
+        } catch (DataIntegrityViolationException e) {
+            throw new ValidateDuplicateNickname();
         }
     }
 }

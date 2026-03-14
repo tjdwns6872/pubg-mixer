@@ -39,7 +39,7 @@ public class MemberController {
      * 검색 키워드를 기반으로 회원 목록을 조회한다.
      * 키워드가 없을 경우 전체 목록을 반환하며, 인덱스를 활용한 최적화된 조회를 수행한다.
      * @param keyword 검색할 닉네임 (Optional)
-     * @return 검색 조건에 부합하는 회원 정보 리스트 (MemberDto)
+     * @return 검색 조건에 부합하는 멤버 정보 리스트 (MemberDto)
      */
     @GetMapping("/members")
     public ResponseEntity<CommonResponse<List<MemberDto>>> readMembers(@RequestParam(required = false) @Size(max = 20) String keyword){

@@ -15,7 +15,7 @@ public class MemberQueryService {
     private final MemberRepository memberRepository;
 
     /**
-     * 회원 검색 비즈니스 로직을 처리한다.
+     * 멤버 검색 비즈니스 로직을 처리한다.
      * 레포지토리의 QueryDSL 구현체를 통해 동적 쿼리를 실행하며,
      * 검색 결과인 Entity를 DTO 구조로 변환하여 반환한다.
      */
