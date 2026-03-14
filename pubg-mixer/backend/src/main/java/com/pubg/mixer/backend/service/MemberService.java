@@ -1,19 +1,27 @@
 package com.pubg.mixer.backend.service;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import com.pubg.mixer.backend.exception.member.ValidateDuplicateNickname;
+import com.pubg.mixer.backend.exception.member.ValidateRequestDuplicateNickname;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pubg.mixer.backend.dto.MemberDto;
 import com.pubg.mixer.backend.entity.Member;
 import com.pubg.mixer.backend.mapper.MemberMapper;
-import com.pubg.mixer.backend.repository.MemberRepository;
+import com.pubg.mixer.backend.repository.mamber.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MemberService {
     private final MemberRepository memberRepository;
     private final MemberMapper memberMapper;
@@ -26,10 +34,26 @@ public class MemberService {
      */
     @Transactional
     public List<MemberDto> saveMembers(List<MemberDto> dtos) {
-        List<Member> entities = memberMapper.toEntityList(dtos);
+        if (dtos == null || dtos.isEmpty()) {
+            return Collections.emptyList();
+        }
 
-        List<Member> saved = memberRepository.saveAll(entities);
+        Set<String> nicknameSet = new HashSet<>(dtos.size());
 
-        return memberMapper.toDtoList(saved);
+        for(MemberDto dto: dtos){
+            if(!nicknameSet.add(dto.getNickname())){
+                throw new ValidateRequestDuplicateNickname();
+            }
+        }
+
+        try {
+            List<Member> entities = memberMapper.toEntityList(dtos);
+            List<Member> saved = memberRepository.saveAll(entities);
+
+            return memberMapper.toDtoList(saved);
+
+        } catch (DataIntegrityViolationException e) {
+            throw new ValidateDuplicateNickname();
+        }
     }
 }
