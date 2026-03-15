@@ -25,7 +25,7 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom{
                 ))
                 .from(member)
                 .where(
-                        niknameEq(keyword)
+                        nicknameEq(keyword)
                 )
                 .fetch();
     }

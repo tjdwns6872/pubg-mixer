@@ -5,7 +5,7 @@ import org.springframework.util.StringUtils;
 import static com.pubg.mixer.backend.entity.QMember.member;
 public class MemberExpressions {
 
-    public static BooleanExpression niknameEq(String keyword){
+    public static BooleanExpression nicknameEq(String keyword){
         if(!StringUtils.hasText(keyword)){
             return null;
         }
