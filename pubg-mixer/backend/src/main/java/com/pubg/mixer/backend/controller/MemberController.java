@@ -4,6 +4,7 @@ import com.pubg.mixer.backend.service.MemberQueryService;
 import jakarta.validation.constraints.Size;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
+@Validated
 public class MemberController {
     
     private final MemberService memberService;
@@ -42,9 +44,8 @@ public class MemberController {
      * @return 검색 조건에 부합하는 멤버 정보 리스트 (MemberDto)
      */
     @GetMapping("/members")
-    public ResponseEntity<CommonResponse<List<MemberDto>>> readMembers(@RequestParam(required = false) @Size(max = 20) String keyword){
+    public ResponseEntity<CommonResponse<List<MemberDto>>> readMembers(@RequestParam(required = false) @Size(min = 2, max = 20) String keyword){
         List<MemberDto> find = memberQueryService.getMembers(keyword);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(CommonResponse.success(find));
+        return ResponseEntity.ok(CommonResponse.success(find));
     }
 }
