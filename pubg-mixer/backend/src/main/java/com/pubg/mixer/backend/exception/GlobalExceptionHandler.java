@@ -47,7 +47,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<ErrorResponse> handleException(Exception e, HttpServletRequest request) {
 
-        // StackTrace를 포함한 에러 로깅
+        /*
+         * 시스템 예외는 원인 파악이 중요하므로 StackTrace를 포함해 로깅한다.
+         */
         log.error("System Error: {} {}", request.getMethod(), request.getRequestURI(), e);
 
         ErrorResponse response = new ErrorResponse(
