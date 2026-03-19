@@ -2,6 +2,8 @@ package com.pubg.mixer.backend.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.List;
 
+@Order(Ordered.LOWEST_PRECEDENCE)
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {

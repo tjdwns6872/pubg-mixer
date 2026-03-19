@@ -12,6 +12,7 @@ import java.util.List;
 import com.pubg.mixer.backend.common.CommonResponse;
 import com.pubg.mixer.backend.dto.MemberCreateRequest;
 import com.pubg.mixer.backend.dto.MemberDto;
+import com.pubg.mixer.backend.dto.MemberUpdateRequest;
 import com.pubg.mixer.backend.service.MemberService;
 
 import jakarta.validation.Valid;
@@ -47,5 +48,14 @@ public class MemberController {
     public ResponseEntity<CommonResponse<List<MemberDto>>> readMembers(@RequestParam(required = false) @Size(min = 2, max = 20) String keyword){
         List<MemberDto> find = memberQueryService.getMembers(keyword);
         return ResponseEntity.ok(CommonResponse.success(find));
+    }
+
+    @PatchMapping("/members/{memberId}")
+    public ResponseEntity<CommonResponse<MemberDto>> updateMember(
+            @PathVariable Long memberId,
+            @RequestBody @Valid MemberUpdateRequest request
+    ) {
+        MemberDto updated = memberService.updateMember(memberId, request);
+        return ResponseEntity.ok(CommonResponse.success(updated));
     }
 }
