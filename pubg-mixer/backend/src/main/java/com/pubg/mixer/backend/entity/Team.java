@@ -8,10 +8,17 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
+import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
-@Table(name = "team")
+@Table(
+        name = "team",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_team_number_date", columnNames = {"team_number", "create_date"})
+        }
+)
 @Getter
 public class Team {
     
@@ -23,6 +30,7 @@ public class Team {
     @Column(name = "team_number", nullable = false)
     private Integer teamNumber;
 
-    @Column(name = "create_date", nullable = false)
+    @CreationTimestamp
+    @Column(name = "create_date", nullable = false, updatable = false)
     private LocalDateTime createDate;
 }

@@ -11,10 +11,17 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
+import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
-@Table(name = "match_history")
+@Table(
+        name = "match_history",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_team_map", columnNames = {"team_id", "map_id"})
+        }
+)
 @Getter
 public class MatchHistory {
     
@@ -35,6 +42,7 @@ public class MatchHistory {
     @JoinColumn(name = "landmark_id", nullable = false)
     private Landmark landmark;
 
-    @Column(name = "created_at", nullable = false)
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 }

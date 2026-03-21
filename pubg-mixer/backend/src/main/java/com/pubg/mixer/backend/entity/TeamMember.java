@@ -9,10 +9,16 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
 
 @Entity
-@Table(name = "team_member")
+@Table(
+        name = "team_member",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_team_member", columnNames = {"team_id", "member_id"})
+        }
+)
 @Getter
 public class TeamMember {
     

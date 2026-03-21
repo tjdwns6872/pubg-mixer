@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -45,6 +46,25 @@ public class GlobalExceptionHandler {
                 e.getMessage());
 
         return new ResponseEntity<>(response, HttpStatus.METHOD_NOT_ALLOWED);
+    }
+
+    /**
+     * DB 제약조건 위반(예: 유니크 키 충돌)을 409로 응답한다.
+     *
+     * <p>닉네임 유니크 충돌 같은 케이스를 일관된 상태 코드로 내려준다.</p>
+     */
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    protected ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(
+            DataIntegrityViolationException e, HttpServletRequest request) {
+
+        log.warn("Conflict: {} {} | message: {}",
+                request.getMethod(), request.getRequestURI(), e.getMessage());
+
+        ErrorResponse response = new ErrorResponse(
+                HttpStatus.CONFLICT.value(),
+                e.getMessage());
+
+        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(Exception.class)

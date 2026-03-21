@@ -9,10 +9,16 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
 
 @Entity
-@Table(name = "landmark")
+@Table(
+        name = "landmark",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_landmark_map_name", columnNames = {"map_id", "name"})
+        }
+)
 @Getter
 public class Landmark {
     
@@ -25,6 +31,6 @@ public class Landmark {
     @JoinColumn(name = "map_id", nullable = false)
     private PubgMap map;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, length = 100)
     private String name;
 }
