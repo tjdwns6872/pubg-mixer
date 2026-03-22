@@ -49,4 +49,36 @@ public class PubgMap {
             maxCoordinate = 816000.0f;
         }
     }
+
+    /**
+     * 맵 정보를 부분 수정한다. null이 아닌 인자만 반영한다.
+     *
+     * @throws IllegalArgumentException mapNameInternal이 공백으로 주어진 경우
+     */
+    public void update(
+            String displayName,
+            String internalName,
+            Integer mapSizeKm,
+            String imagePath,
+            Float maxCoordinate
+    ) {
+        if (displayName != null) {
+            this.name = displayName;
+        }
+        if (internalName != null) {
+            if (internalName.isBlank()) {
+                throw new IllegalArgumentException("mapNameInternal은 공백일 수 없습니다.");
+            }
+            this.mapNameInternal = internalName;
+        }
+        if (mapSizeKm != null) {
+            this.mapSizeKm = mapSizeKm;
+        }
+        if (imagePath != null) {
+            this.imagePath = imagePath;
+        }
+        if (maxCoordinate != null) {
+            this.maxCoordinate = maxCoordinate;
+        }
+    }
 }

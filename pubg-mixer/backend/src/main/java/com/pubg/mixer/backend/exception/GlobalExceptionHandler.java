@@ -12,7 +12,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import jakarta.validation.ConstraintViolationException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Order(Ordered.LOWEST_PRECEDENCE)
 @RestControllerAdvice
@@ -27,6 +29,31 @@ public class GlobalExceptionHandler {
                 request.getMethod(), request.getRequestURI(), e.getMessage());
 
         List<ErrorResponse.FieldError> fieldErrors = ErrorResponse.FieldError.of(e.getBindingResult());
+        ErrorResponse response = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "입력값이 올바르지 않습니다.",
+                fieldErrors);
+
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * 메서드 파라미터 등 Bean Validation(@PathVariable @Positive 등) 위반 시 400으로 응답한다.
+     */
+    @ExceptionHandler(ConstraintViolationException.class)
+    protected ResponseEntity<ErrorResponse> handleConstraintViolationException(
+            ConstraintViolationException e, HttpServletRequest request) {
+
+        log.warn("Validation Error: {} {} | message: {}",
+                request.getMethod(), request.getRequestURI(), e.getMessage());
+
+        List<ErrorResponse.FieldError> fieldErrors = e.getConstraintViolations().stream()
+                .map(v -> new ErrorResponse.FieldError(
+                        v.getPropertyPath().toString(),
+                        v.getInvalidValue() == null ? "" : String.valueOf(v.getInvalidValue()),
+                        v.getMessage()))
+                .collect(Collectors.toList());
+
         ErrorResponse response = new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
                 "입력값이 올바르지 않습니다.",
