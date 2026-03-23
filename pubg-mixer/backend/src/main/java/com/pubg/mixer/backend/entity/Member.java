@@ -24,7 +24,7 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "nickname", nullable = false)
+    @Column(name = "nickname", nullable = false, unique = true, length = 50)
     private String nickname;
 
     @Column(name = "tier", nullable = false)

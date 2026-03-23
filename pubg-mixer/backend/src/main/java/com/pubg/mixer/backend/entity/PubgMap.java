@@ -5,12 +5,19 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "map")
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class PubgMap {
     
     @Id
@@ -18,6 +25,60 @@ public class PubgMap {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false, unique = true)
+    @Column(name = "map_name_display", nullable = false, length = 50)
     private String name;
+
+    @Column(name = "map_name_internal", nullable = false, unique = true, length = 50)
+    private String mapNameInternal;
+
+    @Column(name = "map_size_km")
+    private Integer mapSizeKm;
+
+    @Column(name = "image_path", length = 255)
+    private String imagePath;
+
+    @Column(name = "max_coordinate")
+    private Float maxCoordinate;
+
+    @PrePersist
+    public void prePersist() {
+        if (mapNameInternal == null || mapNameInternal.isBlank()) {
+            mapNameInternal = name;
+        }
+        if (maxCoordinate == null) {
+            maxCoordinate = 816000.0f;
+        }
+    }
+
+    /**
+     * 맵 정보를 부분 수정한다. null이 아닌 인자만 반영한다.
+     *
+     * @throws IllegalArgumentException mapNameInternal이 공백으로 주어진 경우
+     */
+    public void update(
+            String displayName,
+            String internalName,
+            Integer mapSizeKm,
+            String imagePath,
+            Float maxCoordinate
+    ) {
+        if (displayName != null) {
+            this.name = displayName;
+        }
+        if (internalName != null) {
+            if (internalName.isBlank()) {
+                throw new IllegalArgumentException("mapNameInternal은 공백일 수 없습니다.");
+            }
+            this.mapNameInternal = internalName;
+        }
+        if (mapSizeKm != null) {
+            this.mapSizeKm = mapSizeKm;
+        }
+        if (imagePath != null) {
+            this.imagePath = imagePath;
+        }
+        if (maxCoordinate != null) {
+            this.maxCoordinate = maxCoordinate;
+        }
+    }
 }
