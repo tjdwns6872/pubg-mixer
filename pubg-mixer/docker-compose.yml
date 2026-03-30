@@ -12,7 +12,7 @@ services:
       MYSQL_USER: mixer
       MYSQL_PASSWORD: mixer
     ports:
-      - "33307:3306"
+      - "3306:3306"
     volumes:
       - db-data:/var/lib/mysql
     networks:
