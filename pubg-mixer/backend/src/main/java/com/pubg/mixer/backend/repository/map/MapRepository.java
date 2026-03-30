@@ -6,6 +6,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MapRepository extends JpaRepository<PubgMap, Long>, MapRepositoryCustom {
-
-    boolean existsByMapNameInternalAndIdNot(String mapNameInternal, Long id);
 }
