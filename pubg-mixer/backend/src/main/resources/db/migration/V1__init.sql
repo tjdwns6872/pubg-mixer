@@ -1,90 +1,42 @@
--- ============================
--- MEMBER
--- ============================
-CREATE TABLE IF NOT EXISTS member (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nickname VARCHAR(50) NOT NULL UNIQUE,
-    tier INT NOT NULL,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FULLTEXT INDEX ft_idx_nickname (nickname) WITH PARSER ngram
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+INSERT INTO `map` (`map_name_internal`, `map_name_display`, `map_size_km`, `image_path`, `max_coordinate`) VALUES
+-- 8x8 km 대형 맵
+('Erangel_Main', '에란겔', 8, '/assets/maps/erangel.jpg', 816000.0),
+('Desert_Main', '미라마', 8, '/assets/maps/miramar.jpg', 816000.0),
+('Tiger_Main', '태이고', 8, '/assets/maps/taego.jpg', 816000.0),
+('Kiki_Main', '데스턴', 8, '/assets/maps/deston.jpg', 816000.0),
+('Neon_Main', '론도', 8, '/assets/maps/rondo.jpg', 816000.0),
+-- 6x6 km 중형 맵
+('DihorOtok_Main', '비켄디', 6, '/assets/maps/vikendi.jpg', 612000.0),
+-- 4x4 km 및 소형 맵
+('Savage_Main', '사녹', 4, '/assets/maps/sanhok.jpg', 408000.0);
 
--- ============================
--- TEAM (매칭 단위)
--- create_date 기준으로 이벤트 구분
--- ============================
-CREATE TABLE IF NOT EXISTS team (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    team_number INT NOT NULL,
-    create_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE KEY uk_team_number_date (team_number, create_date)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+INSERT INTO `landmark` (`map_id`, `name`, `x_coord`, `y_coord`, `radius`) VALUES
+-- 주요 대도시 (반지름 10,000~15,000)
+(1, 'Pochinki', 416000, 395000, 15000.0),
+(1, 'Georgopol North', 185000, 160000, 12000.0),
+(1, 'Georgopol South', 185000, 245000, 12000.0),
+(1, 'Yasnaya Polyana', 590000, 245000, 15000.0),
+(1, 'Sosnovka Military Base', 425000, 725000, 18000.0),
+(1, 'Novorepnoye', 625000, 735000, 12000.0),
+(1, 'Mylta', 625000, 495000, 10000.0),
+(1, 'Rozhok', 415000, 285000, 8000.0),
+(1, 'Severny', 425000, 85000, 10000.0),
+(1, 'Primorsk', 155000, 735000, 10000.0),
+-- 주요 거점 및 시설 (반지름 5,000~8,000)
+(1, 'School', 455000, 325000, 8000.0),
+(1, 'Hospital', 135000, 285000, 8000.0),
+(1, 'Mylta Power', 765000, 445000, 10000.0),
+(1, 'Lipovka', 765000, 285000, 8000.0),
+(1, 'Stalber', 665000, 105000, 8000.0),
+(1, 'Quarry', 155000, 495000, 9000.0),
+(1, 'Prison', 645000, 345000, 7000.0),
+(1, 'Mansion', 655000, 285000, 6000.0),
+(1, 'Shelter', 675000, 425000, 5000.0),
+(1, 'Ruins', 265000, 325000, 7000.0),
+(1, 'Shooting Range', 335000, 135000, 7000.0),
+(1, 'Ferry Pier', 285000, 625000, 7000.0),
+(1, 'Farm', 485000, 505000, 8000.0),
+(1, 'Gatka', 285000, 415000, 7000.0),
+(1, 'Zharki', 85000, 85000, 7000.0),
+(1, 'Kameshki', 785000, 125000, 6000.0);
 
--- ============================
--- TEAM_MEMBER
--- ============================
-CREATE TABLE IF NOT EXISTS team_member (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    team_id INT NOT NULL,
-    member_id INT NOT NULL,
-    CONSTRAINT fk_team_member_team
-        FOREIGN KEY (team_id) REFERENCES team(id)
-        ON DELETE CASCADE,
-    CONSTRAINT fk_team_member_member
-        FOREIGN KEY (member_id) REFERENCES member(id)
-        ON DELETE CASCADE,
-    UNIQUE KEY uk_team_member (team_id, member_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- ============================
--- MAP
--- ============================
-CREATE TABLE IF NOT EXISTS `map` (
-    `id` INT AUTO_INCREMENT PRIMARY KEY,
-    `map_name_internal` VARCHAR(50) NOT NULL UNIQUE COMMENT 'API 원본 이름 (예: Erangel_Main)',
-    `map_name_display` VARCHAR(50) NOT NULL COMMENT '표기용 이름 (예: 에란겔)',
-    `map_size_km` INT COMMENT '맵 크기 (8, 4, 2 등)',
-    `image_path` VARCHAR(255) COMMENT '서버 내 이미지 파일 경로',
-    `max_coordinate` FLOAT DEFAULT 816000.0 COMMENT '맵의 최대 좌표값 (좌표 변환용)',
-    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- ============================
--- LANDMARK
--- 맵별 랜드마크
--- ============================
-CREATE TABLE IF NOT EXISTS `landmark` (
-    `id` INT AUTO_INCREMENT PRIMARY KEY,
-    `map_id` INT NOT NULL COMMENT '소속 맵 ID',
-    `name` VARCHAR(100) NOT NULL COMMENT '지명 (예: Pochinki)',
-    `x_coord` FLOAT NOT NULL COMMENT '중심 X 좌표',
-    `y_coord` FLOAT NOT NULL COMMENT '중심 Y 좌표',
-    `radius` FLOAT DEFAULT 5000.0 COMMENT '지역 판정 범위 (반지름)',
-    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT `fk_map_id` FOREIGN KEY (`map_id`) REFERENCES `map` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
--- ============================
--- MATCH_HISTORY
--- 팀별 맵 랜드마크 배정 결과
--- ============================
-CREATE TABLE IF NOT EXISTS match_history (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    team_id INT NOT NULL,
-    map_id INT NOT NULL,
-    landmark_id INT NOT NULL,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT fk_history_team
-        FOREIGN KEY (team_id) REFERENCES team(id)
-        ON DELETE CASCADE,
-
-    CONSTRAINT fk_history_map
-        FOREIGN KEY (map_id) REFERENCES map(id)
-        ON DELETE CASCADE,
-
-    CONSTRAINT fk_history_landmark
-        FOREIGN KEY (landmark_id) REFERENCES landmark(id)
-        ON DELETE CASCADE,
-
-    UNIQUE KEY uk_team_map (team_id, map_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
