@@ -4,6 +4,7 @@ import com.pubg.mixer.backend.common.CommonResponse;
 import com.pubg.mixer.backend.dto.LandmarkDto;
 import com.pubg.mixer.backend.dto.LandmarkFindRequest;
 import com.pubg.mixer.backend.service.LandmarkQueryService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +23,7 @@ public class LandmarkController {
 
     @GetMapping("/landmarks")
     public ResponseEntity<CommonResponse<List<LandmarkDto>>> readLandmarks(
-            @ModelAttribute LandmarkFindRequest request
+            @Valid @ModelAttribute LandmarkFindRequest request
     ) {
         List<LandmarkDto> find = landmarkQueryService.getLandmarks(request);
         return ResponseEntity.ok(CommonResponse.success(find));
