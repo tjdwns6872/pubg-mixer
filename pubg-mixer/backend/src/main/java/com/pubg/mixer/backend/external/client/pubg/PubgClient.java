@@ -1,5 +1,6 @@
 package com.pubg.mixer.backend.external.client.pubg;
 
+import com.pubg.mixer.backend.dto.PubgMatchResponse;
 import com.pubg.mixer.backend.external.dto.pubg.PubgPlayerResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,9 +14,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 )
 public interface PubgClient {
 
-    @GetMapping("/shards/{shard}/players")
+    @GetMapping("/shards/kakao/players")
     PubgPlayerResponse getPlayersByNickname(
-            @PathVariable("shard") String shard,
             @RequestParam("filter[playerNames]") String nicknames
+    );
+
+    @GetMapping("/shards/kakao/matches/{matchId}")
+    PubgMatchResponse getMatchDataList(
+            @PathVariable("matchId") String matchId
     );
 }
